@@ -20,12 +20,6 @@ module.exports = (req, res, next) => {
 
         data.speakers[findIndex] = req.body;
 
-        // data.speakers.forEach(function (rec) {
-        //   if (rec.id == speakerId) {
-        //     rec = req.body;
-        //   }
-        // });
-
         const str = JSON.stringify(data, null, 2);
         console.log(str);
 
@@ -41,48 +35,34 @@ module.exports = (req, res, next) => {
           AZURE_STORAGE_CONNECTION_STRING,
         );
 
-        // Create a unique name for the container
         const containerName = 'jsonserver';
-
-        console.log('\nCreating container...');
-        console.log('\t', containerName);
-
-        // Get a reference to a container
         const containerClient = blobServiceClient.getContainerClient(
           containerName,
         );
 
-        // Create the container
+        // create or access container
         const createContainerResponse = containerClient.create();
         console.log(
           'Container was created successfully. requestId: ',
           createContainerResponse.requestId,
         );
 
-        // Create a unique name for the blob
         const blobName = 'db.json';
-
-        // Get a block blob client
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-        console.log('\nUploading to Azure storage as blob:\n\t', blobName);
-
-        // Upload data to the blob
-        const data1 = JSON.stringify(data, null, 5);
+        const dataToUpload = JSON.stringify(data, null, 5);
         const blobOptions = {
           blobHTTPHeaders: { blobContentType: 'application/json' },
         };
         const uploadBlobResponse = blockBlobClient.upload(
-          data1,
-          data1.length,
+          dataToUpload,
+          dataToUpload.length,
           blobOptions,
         );
         console.log(
           'Blob was uploaded successfully. requestId: ',
           uploadBlobResponse.requestId,
         );
-
-        //
       })
       .catch(function (error) {
         console.log(error);
